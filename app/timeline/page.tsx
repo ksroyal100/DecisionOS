@@ -12,7 +12,7 @@ import {
   outcomeEmoji,
   outcomeColor,
 } from "@/lib/utils";
-import { getSupabaseBrowserClient } from "@/lib/supabase/supabase";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { GitBranch, Clock, CheckCircle2, XCircle, Minus } from "lucide-react";
 
 export default function TimelinePage() {

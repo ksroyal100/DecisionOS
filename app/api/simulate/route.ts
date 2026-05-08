@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { analyzeDecision } from "@/services/groq";
 import { saveDecision } from "@/services/decisions";
-import { getSupabaseServerClient } from "@/lib/supabase/supabase";
+import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { z } from "zod";
 

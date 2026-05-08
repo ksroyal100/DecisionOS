@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDecisionsByUser, deleteDecision } from "@/services/decisions";
-import { getSupabaseServerClient } from "@/lib/supabase/supabase";
+import { getSupabaseServerClient } from "@/lib/supabase/server";
 
 async function getUser(req: NextRequest) {
   const token = req.headers.get("authorization")?.replace("Bearer ", "");
