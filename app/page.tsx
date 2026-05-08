@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { Zap, Brain, TrendingUp, GitBranch, Clock, BarChart2, Eye, Shield } from "lucide-react";
-import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 
 const FEATURES = [

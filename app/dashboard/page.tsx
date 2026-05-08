@@ -5,7 +5,7 @@ import { DecisionOutput, SavedDecision } from "@/types";
 import DecisionForm from "@/components/decision/DecisionForm";
 import DecisionResults from "@/components/decision/DecisionResults";
 import Nav from "@/components/layout/Nav";
-import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { Zap, Clock, Bell } from "lucide-react";
 import Link from "next/link";
 

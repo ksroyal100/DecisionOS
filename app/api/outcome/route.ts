@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { setFollowStatus, setOutcome, getDecisionsByUser, getDueFollowups } from "@/services/decisions";
-import { getSupabaseServerClient } from "@/lib/supabase";
+import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { z } from "zod";
 
 async function getUser(req: NextRequest) {

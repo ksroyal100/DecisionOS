@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { analyzeDecision } from "@/services/groq";
 import { saveDecision, getDecisionsByUser } from "@/services/decisions";
-import { getSupabaseServerClient } from "@/lib/supabase";
+import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { z } from "zod";
 
@@ -14,7 +14,7 @@ const schema = z.object({
 async function getUser(req: NextRequest) {
   const token = req.headers.get("authorization")?.replace("Bearer ", "");
   if (!token) return null;
-  const sb = getSupabaseServerClient();
+  const sb = await getSupabaseServerClient();
   const { data } = await sb.auth.getUser(token);
   return data.user ?? null;
 }

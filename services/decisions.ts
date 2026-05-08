@@ -1,4 +1,4 @@
-import { getSupabaseServerClient } from "@/lib/supabase";
+import { getSupabaseServerClient } from "@/lib/supabase/server";
 import {
   SavedDecision,
   DecisionOutput,
@@ -19,7 +19,7 @@ export async function saveDecision(
   tone: AnalysisTone,
   mode: DecisionMode
 ): Promise<SavedDecision> {
-  const sb = getSupabaseServerClient();
+  const sb = await getSupabaseServerClient();
   const now = new Date();
 
   const { data, error } = await sb
@@ -54,7 +54,7 @@ export async function getDecisionsByUser(
   userId: string,
   limit = 50
 ): Promise<SavedDecision[]> {
-  const sb = getSupabaseServerClient();
+  const sb = await getSupabaseServerClient();
   const { data, error } = await sb
     .from("decisions")
     .select("*")
@@ -67,7 +67,7 @@ export async function getDecisionsByUser(
 
 // ─── Get decisions due for follow-up ────────────────────────────────
 export async function getDueFollowups(userId: string): Promise<SavedDecision[]> {
-  const sb = getSupabaseServerClient();
+  const sb = await getSupabaseServerClient();
   const now = new Date().toISOString();
   const { data } = await sb
     .from("decisions")
@@ -86,7 +86,7 @@ export async function setFollowStatus(
   userId: string,
   status: FollowStatus
 ): Promise<void> {
-  const sb = getSupabaseServerClient();
+  const sb = await getSupabaseServerClient();
   await sb
     .from("decisions")
     .update({ follow_status: status, follow_status_set_at: new Date().toISOString() })
@@ -101,7 +101,7 @@ export async function setOutcome(
   rating: OutcomeRating,
   notes: string
 ): Promise<void> {
-  const sb = getSupabaseServerClient();
+  const sb = await getSupabaseServerClient();
   await sb
     .from("decisions")
     .update({ outcome_rating: rating, outcome_notes: notes, outcome_set_at: new Date().toISOString() })
@@ -115,26 +115,26 @@ export async function setOutcome(
 
 // ─── Share token lookup ──────────────────────────────────────────────
 export async function getByShareToken(token: string): Promise<SavedDecision | null> {
-  const sb = getSupabaseServerClient();
+  const sb = await getSupabaseServerClient();
   const { data } = await sb.from("decisions").select("*").eq("share_token", token).single();
   return data as SavedDecision | null;
 }
 
 // ─── Delete ──────────────────────────────────────────────────────────
 export async function deleteDecision(id: string, userId: string): Promise<void> {
-  const sb = getSupabaseServerClient();
+  const sb = await getSupabaseServerClient();
   await sb.from("decisions").delete().eq("id", id).eq("user_id", userId);
 }
 
 // ─── User Profile ────────────────────────────────────────────────────
 export async function getUserProfile(userId: string): Promise<UserProfile | null> {
-  const sb = getSupabaseServerClient();
+  const sb = await getSupabaseServerClient();
   const { data } = await sb.from("user_profiles").select("*").eq("user_id", userId).single();
   return data as UserProfile | null;
 }
 
 export async function upsertUserProfile(userId: string): Promise<UserProfile> {
-  const sb = getSupabaseServerClient();
+  const sb = await getSupabaseServerClient();
   const { data, error } = await sb
     .from("user_profiles")
     .upsert({ user_id: userId }, { onConflict: "user_id" })
@@ -145,7 +145,7 @@ export async function upsertUserProfile(userId: string): Promise<UserProfile> {
 }
 
 async function incrementUserStats(userId: string) {
-  const sb = getSupabaseServerClient();
+  const sb = await getSupabaseServerClient();
   const profile = await getUserProfile(userId);
   if (!profile) {
     await sb.from("user_profiles").insert({ user_id: userId, total_decisions: 1, decision_score: 10 });
@@ -162,7 +162,7 @@ async function incrementUserStats(userId: string) {
 }
 
 async function updateDecisionScore(userId: string, pts: number, isGood: boolean) {
-  const sb = getSupabaseServerClient();
+  const sb = await getSupabaseServerClient();
   const profile = await getUserProfile(userId);
   if (!profile) return;
   await sb

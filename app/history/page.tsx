@@ -7,7 +7,7 @@ import Nav from "@/components/layout/Nav";
 import DecisionResults from "@/components/decision/DecisionResults";
 import OutcomeTracker from "@/components/decision/OutcomeTracker";
 import { Clock, AlertTriangle, Filter, ChevronRight, Bell, Trash2 } from "lucide-react";
-import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { useAuth } from "@/components/auth/AuthProvider";
 
 type Filter = "all" | "pending_outcome" | "followed" | "ignored";
@@ -21,30 +21,30 @@ export default function HistoryPage() {
   const { user, loading : authLoading } = useAuth();
 
   const load = useCallback(async () => {
-  const sb = getSupabaseBrowserClient();
+  const sb =  getSupabaseBrowserClient();
 
   setLoading(true);
   setError(null);
 
+  
   // 🔥 STEP 1: ALWAYS wait for session properly
-  const {
-    data: { session },
-  } = await sb.auth.getSession();
+ let {
+  data: { session },
+} = await sb.auth.getSession();
 
-  // small safety retry (fixes refresh race condition)
-  if (!session) {
-    const {
-      data: { session: retrySession },
-    } = await sb.auth.getSession();
+// retry once
+if (!session) {
+  const retry = await sb.auth.getSession();
+  session = retry.data.session;
+}
 
-    if (!retrySession) {
-      setError("Sign in to see your history");
-      setLoading(false);
-      return;
-    }
-  }
+if (!session) {
+  setError("Sign in to see your history");
+  setLoading(false);
+  return;
+}
 
-  const token = session?.access_token;
+const token = session.access_token;
 
   try {
     const res = await fetch("/api/outcome", {
@@ -67,10 +67,20 @@ export default function HistoryPage() {
   }
 }, []);
 
-  // useEffect(() => { load(); }, [load]);
-  useEffect(() => {
-  if (user) load();
-}, [user]);
+useEffect(() => {
+  // wait until auth fully initializes
+  if (authLoading) return;
+
+  // user not logged in
+  if (!user) {
+    setError("Sign in to see your history");
+    setLoading(false);
+    return;
+  }
+
+  // logged in
+  load();
+}, [user, authLoading, load]);
 
   const filtered = decisions.filter((d) => {
     if (filter === "pending_outcome") return !d.outcome_rating;

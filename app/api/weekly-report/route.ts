@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDecisionsByUser } from "@/services/decisions";
-import { getSupabaseServerClient } from "@/lib/supabase";
+import { getSupabaseServerClient } from "@/lib/supabase/supabase";
 import { startOfWeek, isAfter, subWeeks } from "date-fns";
 
 async function getUser(req: NextRequest) {

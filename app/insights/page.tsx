@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Nav from "@/components/layout/Nav";
-import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { SavedDecision } from "@/types";
 import { formatRelative, outcomeEmoji, outcomeColor, scoreLevel, styleLabel, riskColor } from "@/lib/utils";
 import { BarChart2, TrendingUp, Brain, Zap, Target, Star, AlertCircle } from "lucide-react";
